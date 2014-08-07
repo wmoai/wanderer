@@ -92,7 +92,7 @@ io.on('connection', function (socket) {
   var move = function(dx, dy) {
     var tx = chara.loc[0] + dx;
     var ty = chara.loc[1] + dy;
-    if (tx >= 0 && tx < 255 && ty >= 0 && ty < 255) {
+    if (tx >= 0 && tx < 100 && ty >= 0 && ty < 100) {
       chara.loc[0] = tx;
       chara.loc[1] = ty;
       renderMap();

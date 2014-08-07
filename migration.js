@@ -14,7 +14,7 @@ var Map = mongoose.model('Map', MapSchema);
 
 
 var savemap = function(x,y) {
-  var size = 255;
+  var size = 100;
   var map = new Map;
   map.loc = [x,y];
   map.height = 1;
@@ -36,10 +36,16 @@ var savemap = function(x,y) {
     savemap(x,y);
   });
 }
+// savemap(0,0);
 
-Map.findOne({loc: [50,50]})
-.exec(function(err, doc) {
-  doc.height = 2;
-  doc.save(function(err) {
+var saveHeight = function(x,y) {
+  Map.findOne({loc: [x,y]})
+  .exec(function(err, doc) {
+    doc.height = 2;
+    doc.save(function(err) {
+    });
   });
-});
+}
+saveHeight(50,50);
+
+

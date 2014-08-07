@@ -19,17 +19,16 @@ var Map = mongoose.model('Map', MapSchema);
 // 0:grass
 // 1:forest
 // 2:waste
+// 3:desert
+// 4:low Mt.
+// 5:high Mt.
+// 6:water
 //
 // 10:rock
-// 11:desert
 // 12:snow
 // 13:ice
 // 14:cliff
 //
-// 20:low Mt.
-// 21:high Mt.
-//
-// 30:water
 // 31:damp
 //
 // 40:village

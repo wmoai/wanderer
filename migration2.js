@@ -45,40 +45,6 @@ var setGeo = function(x,y,geo) {
     });
   });
 }
-
-var savemap = function(x,y) {
-  var size = 100;
-  var map = new Map;
-  map.loc = [x,y];
-  map.geo = 0;
-  map.save(function(err) {
-    if (err) {
-      console.log(err);
-      return;
-    }
-    if (x == size-1) {
-      if (y == size-1) {
-        console.log('end');
-        setGeo(50,50,1);
-        return;
-      }
-      x = 0;
-      y++;
-    } else {
-      x++;
-    }
-    savemap(x,y);
-  });
-}
-savemap(0,0);
-
-var setGeo = function(x,y,geo) {
-  Map.findOne({loc: [x,y]})
-  .exec(function(err, doc) {
-    doc.geo = geo;
-    doc.save(function(err) {
-    });
-  });
-}
+setGeo(55,55,40);
 
 

@@ -22,88 +22,92 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }))
 app.listen(3000)
 
-var charas = [];
+var players = [];
 
-var test = require('./generateMap');
-app.get('/test', function(req, res) {
-  res.send(test());
-});
+// var test = require('./generateMap');
+// app.get('/test', function(req, res) {
+  // res.send(test());
+// });
 
 
 app.get('/', function(req, res) {
   res.render('index');
 });
 
-// create character
-app.post('/chara/create', function(req, res) {
+// create playercter
+app.post('/player/create', function(req, res) {
   var sha1sum = crypto.createHash('sha1')
   sha1sum.update(String(Math.random()));
   var session = sha1sum.digest('hex');
-  var chara = {
-    id : charas.length,
+  var player = {
+    id : players.length,
     loc : [51,51],
     session : session,
-    range : 5
+    range : 6
   };
-  charas.push(chara);
+  players.push(player);
   res.send({
-    id : chara.id,
-    session : chara.session,
-    range : chara.range
+    id : player.id,
+    session : player.session,
+    range : player.range
   });
 });
 
-var authChara = function(id, session) {
-  var chara = charas[id];
-  if (!chara) {
-    throw new Error('404');
+var authPlayer = function(id, session) {
+  var player = players[id];
+  if (!player) {
+    throw new Error('404 : id notfound '+id);
   }
-  if (chara.session != session) {
+  if (player.session != session) {
     throw new Error('403');
   }
-  return chara;
+  return player;
 }
 
-var vision = function(req, res) {
-  var chara = authChara(req.body.id, req.body.session);
+var view = function(req, res) {
+  var player = authPlayer(req.body.id, req.body.session);
   Map.find({
     'loc': {
-      '$near' : chara.loc,
-      '$maxDistance': chara.range
+      '$within': {
+        '$center': [player.loc, player.range]
+      }
     }
   })
   .exec(function(err, docs) {
-    var vision = [];
-    for (var i=0; i<chara.range*2+1; i++) {
-      vision[i] = [];
-    }
+    var result = [];
     docs.map(function(doc) {
-      vision[doc.loc[0] - chara.loc[0] + chara.range][doc.loc[1] - chara.loc[1] + chara.range]= doc.geo;
+      var x = doc.loc[0] - player.loc[0] + player.range;
+      var y = doc.loc[1] - player.loc[1] + player.range;
+      if (result[x] == undefined) {
+        result[x] = [];
+      }
+      result[x][y] = doc.geo;
     });
     res.send({
-      vision : vision,
-      point : [chara.range, chara.range]
+      view : result,
+      point : [player.range, player.range]
     });
   });
 }
-app.post('/chara/vision', vision);
+app.post('/player/view', view);
 
-app.post('/chara/move/:dir', function(req, res) {
-  var chara = authChara(req.body.id, req.body.session);
+app.post('/player/move/:dir', function(req, res) {
+  var player = authPlayer(req.body.id, req.body.session);
   switch (req.params.dir) {
   case 'w':
-    chara.loc[0]--;
+    player.loc[0]--;
     break;
   case 'n':
-    chara.loc[1]--;
+    player.loc[1]--;
     break;
   case 'e':
-    chara.loc[0]++;
+    player.loc[0]++;
     break;
   case 's':
-    chara.loc[1]++;
+    player.loc[1]++;
     break;
   }
-  vision(req, res);
+  view(req, res);
 });
+
 

@@ -35,7 +35,9 @@ var Map = mongoose.model('Map', MapSchema);
 // 40:village
 // 41:town
 // 42:fortress
-// 43:ruins
+//
+// 50:ruins
+// 51:cave
 //
 
 var setGeo = function(x,y,geo) {
@@ -72,14 +74,4 @@ var savemap = function(x,y) {
   });
 }
 savemap(0,0);
-
-var setGeo = function(x,y,geo) {
-  Map.findOne({loc: [x,y]})
-  .exec(function(err, doc) {
-    doc.geo = geo;
-    doc.save(function(err) {
-    });
-  });
-}
-
 

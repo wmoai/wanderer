@@ -1,9 +1,13 @@
 {
   "name": "wanderer",
   "version": "0.0.0",
-  "description": "",
+  "description": "wmoai",
   "main": "app.js",
   "dependencies": {
+    "body-parser": "^1.7.0",
+    "express": "^4.8.7",
+    "express-session": "^1.7.6",
+    "jade": "^1.6.0",
     "mongoose": "^3.8.13",
     "socket.io": "^1.0.6"
   },
@@ -12,5 +16,13 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "wmoai",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wmoai/wanderer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wmoai/wanderer/issues"
+  },
+  "homepage": "https://github.com/wmoai/wanderer"
 }

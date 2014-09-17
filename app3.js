@@ -2,16 +2,21 @@ var express = require('express')
   , app = express()
   , bodyParser = require('body-parser')
   , session = require('express-session')
+  , sessionStore = new session.MemoryStore
   , server = require('http').createServer(app).listen(3000)
-
   , User = require('./model/user');
 ;
+
+var COOKIE_SECRET = "test";
+var COOKIE_KEY = "sid";
 
 // Midleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session({
-  secret: String(Math.random())
+  name: COOKIE_KEY ,
+  secret: COOKIE_SECRET,
+  store: sessionStore
 }));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
@@ -28,7 +33,6 @@ function isAuthenticated(req, res, next) {
 
 // Route
 app.get('/', function(req, res, next) {
-  console.log(req.sessionID);
   var sess = req.session;
   if (sess.name) {
     res.redirect('/app');
@@ -70,24 +74,33 @@ app.use(function(err, req, res, next){
   });
 });
 
+
 var io = require('socket.io')(server);
 io.use(function(socket, next) {
   var handshake = socket.handshake;
     if(handshake.headers.cookie) {
-      var cookie = handshake.headers.cookie;
-      // var sessionID = Cookie.parse(cookie)['connect.sid'];
-      // handshake.sessionID =  sessionID;
-      console.log(cookie);
+      var cookie = require('cookie').parse(handshake.headers.cookie);
+      cookie = require('cookie-parser/lib/parse').signedCookies(cookie, COOKIE_SECRET);
+      var sid = cookie[COOKIE_KEY];
+      sessionStore.get(sid, function(err, session) {
+        if (!err && session) {
+          handshake.session = session;
+          next();
+        } else {
+          return next('not authenticated.', false);
+        }
+      });
     } else {
       return next('not authenticated.', false);
     }
-    next(null, true);
 });
 
-io.on('connection', function (socket) {
+io.on('connection', function(socket) {
   console.log('connect');
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
+  socket.on('test', function () {
+    console.log(socket.handshake.session);
   });
 });
+
+
+

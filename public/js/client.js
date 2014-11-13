@@ -23,6 +23,7 @@ $(function() {
   });
 
   socket.on('map', function(data){
+    console.log(data);
     var map = data.map;
     var mapstr = '';
     for (var x =0; x < map.length; x++) {

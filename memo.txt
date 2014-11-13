@@ -1,8 +1,0 @@
-API
--signup
- name
- password
--signin // connect websocket
- name
- password
-
